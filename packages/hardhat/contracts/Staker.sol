@@ -9,14 +9,16 @@ contract Staker {
 
   uint256 public constant threshold = 1 ether;
   uint256 public deadline = now + 30 seconds;
+  
 
   mapping (address => uint256 ) public balances;
 
   event Stake(address accountAddress, uint256 amount);
-
+  event Withdraw(address accountAddress, uint256 amount);
 
   constructor(address exampleExternalContractAddress) public {
     exampleExternalContract = ExampleExternalContract(exampleExternalContractAddress);
+    bool openForWithdraw = false;
   }
 
 
@@ -37,9 +39,18 @@ contract Staker {
   //  It should either call `exampleExternalContract.complete{value: address(this).balance}()` to send all the value
 
     function execute() public {
+      require(now >= deadline, "fail");
+      exampleExternalContract.complete{value: address(this).balance}();
 
     }
-
+    
+    function withdraw() public payable  {
+      (bool success, ) = msg.sender.call{value: address(this).balance}("");
+      require( success, "FAILED");
+      emit Withdraw(msg.sender, balances[msg.sender]);
+      balances[msg.sender] = 0;
+      
+    }
   // if the `threshold` was not met, allow everyone to call a `withdraw()` function
 
 
