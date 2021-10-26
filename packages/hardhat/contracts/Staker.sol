@@ -59,7 +59,7 @@ contract Staker {
 
   // Add a `timeLeft()` view function that returns the time left before the deadline for the frontend
   function timeLeft() public view returns(uint256) {
-    return deadline - now;
+    // check if now got a bigger timestamp than the deadline, if yes then 0 timeleft,if not return the remaining time.
+    return now > deadline ? 0 : deadline - now;
   }
-
 }
