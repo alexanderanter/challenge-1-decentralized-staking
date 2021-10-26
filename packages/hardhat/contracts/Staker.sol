@@ -40,11 +40,13 @@ contract Staker {
 
     function execute() public {
       require(now >= deadline, "fail");
+      require(address(this).balance >= threshold, "not enough staked");
       exampleExternalContract.complete{value: address(this).balance}();
 
     }
     
     function withdraw() public payable  {
+      require(now <= deadline, "oh its too much late for that");
       (bool success, ) = msg.sender.call{value: address(this).balance}("");
       require( success, "FAILED");
       emit Withdraw(msg.sender, balances[msg.sender]);
@@ -56,6 +58,8 @@ contract Staker {
 
 
   // Add a `timeLeft()` view function that returns the time left before the deadline for the frontend
-
+  function timeLeft() public view returns(uint256) {
+    return deadline - now;
+  }
 
 }
