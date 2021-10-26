@@ -264,6 +264,10 @@ function App(props) {
   const stakeEvents = useEventListener(readContracts, "Staker", "Stake", localProvider, 1);
   console.log("📟 stake events:", stakeEvents);
 
+  // ** 📟 Listen for broadcast events
+  const withdrawEvents = useEventListener(readContracts, "Staker", "Withdraw", localProvider, 1);
+  console.log("📟 Withdraw events:", withdrawEvents);
+
   // ** keep track of a variable from the contract in the local React state:
   const timeLeft = useContractReader(readContracts, "Staker", "timeLeft");
   console.log("⏳ timeLeft:", timeLeft);
@@ -569,6 +573,20 @@ function App(props) {
               <div>Stake Events:</div>
               <List
                 dataSource={stakeEvents}
+                renderItem={item => {
+                  return (
+                    <List.Item key={item.blockNumber}>
+                      <Address value={item.args[0]} ensProvider={mainnetProvider} fontSize={16} /> =>
+                      <Balance balance={item.args[1]} />
+                    </List.Item>
+                  );
+                }}
+              />
+            </div>
+            <div style={{ width: 500, margin: "auto", marginTop: 64 }}>
+              <div>Withdraw Events:</div>
+              <List
+                dataSource={withdrawEvents}
                 renderItem={item => {
                   return (
                     <List.Item key={item.blockNumber}>
